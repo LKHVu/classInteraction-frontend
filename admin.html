@@ -1,0 +1,24 @@
+<html>
+
+<head>
+    <title>Admin</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+
+</head>
+
+<body>
+    <div id="classes">
+    </div>
+    <input type="button" value="Create new class" onClick="unhide()" />
+    <input type="input" value="Class name" name="classname" id="classname" style="display:none" />
+    <input type="input" value="Number of rows" name="row" id="row" style="display:none" />
+    <input type="input" value="Number of columns" name="col" id="col" style="display:none" />
+    <input type="input" value="Start hour" name="starthour" id="starthour" style="display:none" />
+    <input type="input" value="Start minute" name="startminute" id="startminute" style="display:none" />
+    <input type="input" value="End hour" name="endhour" id="endhour" style="display:none" />
+    <input type="input" value="End minute" name="endminute" id="endminute" style="display:none" />
+    <input type="button" value="Submit" id="submit" style="display:none" onClick="createClass()" />
+    <script src="script/admin.js"></script>
+</body>
