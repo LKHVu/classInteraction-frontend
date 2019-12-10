@@ -23,8 +23,6 @@ function load(){
     var req = window.location.search;
     var state = get("state" + req);
     var info = get("class" + req);
-    start.innerHTML = info["startHour"] + ":" + info["startMinute"];
-    end.innerHTML = info["endHour"] + ":" + info["endMinute"];
     if (info["active"]==1){
         active.style="color: green; font-weight: bold; display: inline";
         active.innerHTML="ON";

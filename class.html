@@ -4,15 +4,21 @@
     <title>Teacher</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="style/style.css">
 
 </head>
 
 <body>
-    <div id="seat"></div>
-    <div>Class is: <p id="active"></p></div>
-    <input type="button" value="Turn class ON/OFF" id="activeclass" style="display:block" onClick="activeClass()" />
-    <span>Class start: <span id="start"></span></span><br>
-    <span>Class end: <span id="end"></span></span>
+    <!-- start of testing tables -->
+    <table>
+        <tbody id="table"></tbody>
+    </table>
+
+    <!-- end of testing table -->
+    <div>Class is: <span id="active"></p>
+    </div>
+    <div><span id="year"></span></div>
+    <input type="button" value="Turn class ON/OFF" onClick="activeClass()" />
     <div id="student"></div>
     <script src="script/class.js"></script>
 </body>
