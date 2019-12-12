@@ -1,5 +1,7 @@
 const URL = "http://localhost:8080/api/";
 var classes = document.getElementById("classes");
+var completedQuiz = document.getElementById("completedQuiz");
+var quizArr = [];
 
 
 function get(param) {
@@ -11,11 +13,17 @@ function get(param) {
     return jsonResponse;
 }
 
-function load(){
+function load() {
     var classArr = get("showclass");
-    for (var i=0; i<classArr.length; i++){
+    var quizArr = get("quizdone?studentid=1");
+    console.log(quizArr);
+    for (var i = 0; i < classArr.length; i++) {
         var classname = classArr[i]["name"];
         classes.innerHTML += ' <a href="classStu.html?name=' + classname + '">' + classname + '</a>';
+    }
+    for (var i = 0; i < quizArr.length; i++) {
+        completedQuiz.innerHTML += ' <a href="quizReview.html?studentid=1&questionid=' + quizArr[i]["id"] + '">' +
+            quizArr[i]["name"] + '</a>';
     }
 }
 

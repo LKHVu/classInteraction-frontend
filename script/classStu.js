@@ -1,6 +1,7 @@
 const URL = "http://localhost:8080/api/";
 var seat = document.getElementById("seat");
 var active = document.getElementById("active");
+var activeQuestions = document.getElementById("activeQuestions");
 
 function get(param) {
     var req = new XMLHttpRequest();
@@ -19,6 +20,7 @@ function post(param, data){
 }
 
 function load(){
+    showActiveQuestions();
     seat.innerHTML = "";
     var req = window.location.search;
     var state = get("state" + req);
@@ -56,5 +58,15 @@ function chooseSeat(span){
     post("createstate", data);
     load();
 }
+
+function showActiveQuestions(){
+    var req = window.location.search;
+    var className = req.replace('?name=', '');
+    var questions = get("activequestion?className=" + className);
+    for (i=0; i<questions.length; i++){
+        activeQuestions.innerHTML += " <a href=quizStu.html?questionid=" + questions[i]["id"] + ">" + questions[i]["name"] + "</a>"
+    }
+}
+
 
 window.onload = load();

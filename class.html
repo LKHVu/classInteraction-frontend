@@ -9,16 +9,35 @@
 </head>
 
 <body>
-    <!-- start of testing tables -->
     <table>
         <tbody id="table"></tbody>
     </table>
-
-    <!-- end of testing table -->
     <div>Class is: <span id="active"></p>
     </div>
     <div><span id="year"></span></div>
     <input type="button" value="Turn class ON/OFF" onClick="activeClass()" />
     <div id="student"></div>
+    <input type="button" value="Create new multiple choice question" onClick="unhideCreateQuestion()" />
+    <input type="input" value="Name" name="quizName" id="quizName" style="display:none" />
+    <textarea id="question" style="display:none">Input question</textarea>
+    <textarea id="A" style="display:none">Input Answer A</textarea>
+    <textarea id="B" style="display:none">Input Answer B</textarea>
+    <textarea id="C" style="display:none">Input Answer C</textarea>
+    <textarea id="D" style="display:none">Input Answer D</textarea>
+    <input type="input" value="Seconds:" name="time" id="time" style="display:none" />
+    <select id="solution" style="display:none">
+        <option>Solution</option>
+        <option value="A">A</option>
+        <option value="B">B</option>
+        <option value="C">C</option>
+        <option value="D">D</option>
+    </select>
+    <input type="button" value="Submit" id="submitQuiz" style="display:none" onClick="createMultipleChoiceQuestion()" />
+    <input type="button" value="Show inactive questions" onClick="showInactiveQuestions()" />
+    <div id="inactiveQuestions"></div>
+    <div id="activeQuestions">Active quizzes: </div>
+    <input type="button" value="Show finished questions" onClick="showFinishedQuestions()" />
+    <div id="finished"></div>
+    <h1 id="countdown"></h1>
     <script src="script/class.js"></script>
 </body>
