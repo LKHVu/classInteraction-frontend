@@ -32,7 +32,6 @@ function load() {
     quizName.innerHTML = quiz["name"];
     question.innerHTML = quiz["question"];
     var answers = [quiz["a"], quiz["b"], quiz["c"], quiz["d"]];
-    var takeDecider = true;
     var deciderArr = [];
     for (i = 0; i <= 3; i++) {
         var decider = Math.floor(Math.random() * 4);

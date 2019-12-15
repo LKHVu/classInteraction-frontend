@@ -9,7 +9,7 @@ function get(param) {
     req.send(null);
     var data = req.responseText;
     var jsonResponse = JSON.parse(data);
-    return jsonResponse
+    return jsonResponse;
 }
 
 function post(param, data){
@@ -17,6 +17,9 @@ function post(param, data){
     req.open("POST", URL + param, false);
     req.setRequestHeader("Content-Type", "application/json");
     req.send(data);
+    var data = req.responseText;
+    var jsonResponse = JSON.parse(data);
+    return jsonResponse;
 }
 
 function load(){
@@ -55,7 +58,7 @@ function chooseSeat(span){
     var req = window.location.search;
     var classname = req.replace('?name=', '');
     var data = JSON.stringify({"class": classname, "row": coord[0], "col": coord[1], "student": 1});
-    post("createstate", data);
+    alert(post("createstate", data)["Result"]);
     load();
 }
 

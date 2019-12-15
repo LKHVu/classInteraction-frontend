@@ -63,33 +63,4 @@ function createStudent() {
   post("createstudent", data);
   load();
 }
-
-// function uploadFile(){
-//     console.log("yes1");
-//     var input = document.getElementById("file");
-//     file = input.files[0];
-//     if(file != undefined){
-//       formData= new FormData();
-//       console.log("yes2");
-//       if(!!file.type.match(/image.*/)){
-//         console.log("yes3");
-//         formData.append("image", file);
-//         $.ajax({
-//           url: "upload.php",
-//           type: "POST",
-//           data: formData,
-//           processData: false,
-//           contentType: false,
-//           success: function(data){
-//               alert('success');
-//           }
-//         });
-//       }else{
-//         alert('Not a valid image!');
-//       }
-//     }else{
-//       alert('Input something!');
-//     }
-//   }
-
 window.onload = load();
