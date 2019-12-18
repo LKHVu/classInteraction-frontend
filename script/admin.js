@@ -1,7 +1,6 @@
 const URL = "http://localhost:8080/api/";
 var classes = document.getElementById("classes");
 
-
 function get(param) {
   var req = new XMLHttpRequest();
   req.open("GET", URL + param, false);

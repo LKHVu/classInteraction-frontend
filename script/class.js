@@ -1,4 +1,4 @@
-const URL = "http://localhost:8080/api/";
+const server = "http://localhost:8080/api/";
 var seat = document.getElementById("seat");
 var active = document.getElementById("active");
 var year = document.getElementById("year");
@@ -8,11 +8,15 @@ var state = [];
 var inactiveQuestions = document.getElementById("inactiveQuestions");
 var finished = document.getElementById("finished");
 var activeQuestions = document.getElementById("activeQuestions");
+var finishedQuestions = [];
+var quizToShowResult = document.getElementById("quizToShowResult");
+var showResultBySeatActiveQuestions = document.getElementById("showResultBySeatActiveQuestions");
+var workerLength = 0;
 
 
 function get(param) {
     var req = new XMLHttpRequest();
-    req.open("GET", URL + param, false);
+    req.open("GET", server + param, false);
     req.send(null);
     var data = req.responseText;
     var jsonResponse = JSON.parse(data);
@@ -21,23 +25,23 @@ function get(param) {
 
 function put(param) {
     var req = new XMLHttpRequest();
-    req.open("PUT", URL + param, false);
+    req.open("PUT", server + param, false);
     req.send(null);
 }
 
 function post(param, data) {
     var req = new XMLHttpRequest();
-    req.open("POST", URL + param, false);
+    req.open("POST", server + param, false);
     req.setRequestHeader("Content-Type", "application/json");
     req.send(data);
 }
 
 function load() {
     showActiveQuestions();
-    var tableContent = "";
+    var req = window.location.search;
+    finishedQuestions = get("finishedquestion?className=" + req.replace('?name=', ''));
     table.innerHTML = "";
     year.innerHTML = "";
-    var req = window.location.search;
     state = get("state" + req);
     info = get("class" + req);
     if (info["active"] == 1) {
@@ -50,7 +54,49 @@ function load() {
             active.innerHTML = "OFF";
         }
     }
+    loadClassMap("default", 0);
+}
 
+function loadClassMap(choice, questionid) {
+    loadMapWithoutData(choice);
+    for (i = 0; i < state.length; i++) {
+        var row = state[i]["row"];
+        var col = state[i]["col"];
+        var imgOccupied = document.getElementById("img " + row + " " + col);
+        var nameOccupied = document.getElementById("name " + row + " " + col);
+        var studentId = parseInt(state[i]["student"]);
+        var studentInfo = get("student?id=" + studentId);
+        imgOccupied.src = studentInfo["img"];
+        nameOccupied.innerHTML = studentInfo["name"];
+        if (choice == "default") {
+            var classCheckOccupied = document.getElementById("classCheck " + row + " " + col);
+            var exchangeOccupied = document.getElementById("exchange " + row + " " + col);
+            if (studentInfo["year"] == info["year"]) {
+                classCheckOccupied.className += " greenBg";
+            } else {
+                classCheckOccupied.className += " redBg";
+            }
+            if (studentInfo["exchange"] == 1) {
+                exchangeOccupied.className += " blackBg";
+            }
+        } else if (choice == "result") {
+            var resultCheck = document.getElementById("resultCheck " + row + " " + col);
+            var resultGet = get("quizreview?questionid=" + questionid + "&studentid=" + studentId);
+            if (resultGet["solution"] == resultGet["answer"]) {
+                resultCheck.className += " greenBg";
+            } else if (resultGet["solution"] != resultGet["answer"]) {
+                if (resultGet["answer"] == "N") {
+                    resultCheck.className += " blackBg";
+                } else {
+                    resultCheck.className += " redBg";
+                }
+            }
+        }
+    }
+}
+
+function loadMapWithoutData(choice) {
+    var tableContent = "";
     for (i = 1; i <= info["rows"]; i++) {
         tableContent += "<tr>";
         for (j = 1; j <= info["cols"]; j++) {
@@ -59,10 +105,14 @@ function load() {
                 "<img id='img " + i + " " + j + "'>" +
                 "<div class=\"cellBottom\">\r\n" +
                 "<span class=\"studentName\" id='name " + i + " " + j + "'></span>" +
-                "<div class=\"checkContainer\">\r\n" +
-                "<div id='classCheck " + i + " " + j + "' class=\"classCheck\"></div>\r\n" +
-                "<div id='exchange " + i + " " + j + "' class=\"exchangeCheck\"></div>\r\n" +
-                "</div>\r\n" +
+                "<div class=\"checkContainer\">\r\n";
+            if (choice == "default") {
+                tableContent += "<div id='classCheck " + i + " " + j + "' class=\"classCheck\"></div>\r\n" +
+                    "<div id='exchange " + i + " " + j + "' class=\"exchangeCheck\"></div>\r\n";
+            } else if (choice == "result") {
+                tableContent += "<div id='resultCheck " + i + " " + j + "' class=\"resultCheck\"></div>\r\n"
+            }
+            tableContent += "</div>\r\n" +
                 "</div>\r\n" +
                 "</div>\r\n" +
                 "</td>";
@@ -70,27 +120,6 @@ function load() {
         tableContent += "</tr>";
     }
     table.innerHTML = tableContent;
-
-    for (i = 0; i < state.length; i++) {
-        var row = state[i]["row"];
-        var col = state[i]["col"];
-        var imgOccupied = document.getElementById("img " + row + " " + col);
-        var nameOccupied = document.getElementById("name " + row + " " + col);
-        var classCheckOccupied = document.getElementById("classCheck " + row + " " + col);
-        var exchangeOccupied = document.getElementById("exchange " + row + " " + col);
-        var studentId = parseInt(state[i]["student"]);
-        var studentInfo = get("student?id=" + studentId);
-        imgOccupied.src = studentInfo["img"];
-        nameOccupied.innerHTML = studentInfo["name"];
-        if (studentInfo["year"] == info["year"]) {
-            classCheckOccupied.className += " rightClass";
-        } else {
-            classCheckOccupied.className += " wrongClass";
-        }
-        if (studentInfo["exchange"] == 1) {
-            exchangeOccupied.className += " isExchange";
-        }
-    }
 }
 
 
@@ -140,34 +169,107 @@ function createMultipleChoiceQuestion() {
         "solution": selectedValue
     });
     post("createmultiplechoicequestion", data);
-    load();
 }
 
-function showInactiveQuestions(){
+function showInactiveQuestions() {
     var req = window.location.search;
     var className = req.replace('?name=', '');
     var questions = get("inactivequiz?className=" + className);
-    for (i=0; i<questions.length; i++){
+    for (i = 0; i < questions.length; i++) {
         inactiveQuestions.innerHTML += " <a href=quiz.html?questionid=" + questions[i]["id"] + ">" + questions[i]["name"] + "</a>"
     }
 
 }
 
-function showFinishedQuestions(){
-    var req = window.location.search;
-    var className = req.replace('?name=', '');
-    var finishedQuestions = get("finishedquestion?className=" + className);
-    for (i=0; i<finishedQuestions.length; i++){
+function showFinishedQuestions() {
+    for (i = 0; i < finishedQuestions.length; i++) {
         finished.innerHTML += " <a href=quizResult.html?questionid=" + finishedQuestions[i]["id"] + ">" + finishedQuestions[i]["name"] + "</a>";
     }
 }
 
-function showActiveQuestions(){
+function showActiveQuestions() {
     var req = window.location.search;
     var className = req.replace('?name=', '');
     var questions = get("activequestion?className=" + className);
-    for (i=0; i<questions.length; i++){
-        activeQuestions.innerHTML += " <a href=quiz.html?questionid=" + questions[i]["id"] + ">" + questions[i]["name"] + "</a>"
+    if (questions.length > 0) {
+        showResultBySeatActiveQuestions.style.display = "block";
+        for (i = 0; i < questions.length; i++) {
+            activeQuestions.innerHTML += " <a href=quiz.html?questionid=" + questions[i]["id"] + ">" + questions[i]["name"] + "</a>"
+            showResultBySeatActiveQuestions.innerHTML += '<input type="button" value="' + questions[i]["name"] + '" onClick="loadResultBySeat(' +
+                questions[i]["id"] + ')"/>';
+        }
+    }
+}
+
+function unhideShowResult() {
+    quizToShowResult.innerHTML = "";
+    for (i = 0; i < finishedQuestions.length; i++) {
+        quizToShowResult.innerHTML += '<input type="button" value="' + finishedQuestions[i]["name"] + '" onClick="loadClassMap(\'result\'   , ' +
+            finishedQuestions[i]["id"] + ')"/>';
+    }
+}
+
+var w;
+
+function loadResultBySeat(questionid) {
+    loadMapWithoutData("result");
+    w = new Worker(URL.createObjectURL(new Blob(["(" + worker_function.toString() + ")()"], { type: 'text/javascript' })));
+    showResultBySeatActiveQuestions.innerHTML += '<input type="button" value="Stop showing result by seat" onClick="stopLoadResultBySeat()"/>';
+    w.postMessage(questionid);
+    w.onmessage = function (event) {
+        var results = event.data;
+        if (results.length > workerLength) {
+            for (i = 0; i < results.length; i++) {
+                var row = results[i]["row"];
+                var col = results[i]["col"];
+                var answer = results[i]["answer"];
+                var solution = results[i]["solution"];
+                var imgCheck = document.getElementById("img " + row + " " + col);
+                var nameCheck = document.getElementById("name " + row + " " + col);
+                imgCheck.src = results[i]["img"];
+                nameCheck.innerHTML = results[i]["name"];
+                var resultCheck = document.getElementById("resultCheck " + row + " " + col);
+                if (answer == solution) {
+                    resultCheck.className += " greenBg";
+                } else if (answer != solution) {
+                    if (answer == "N") {
+                        resultCheck.className += " blackBg";
+                    } else {
+                        resultCheck.className += " redBg";
+                    }
+                }
+            }
+        }
+    };
+}
+
+function stopLoadResultBySeat() {
+    w.terminate();
+    w = undefined;
+}
+
+function worker_function() {
+    var server = "http://localhost:8080/api/";
+    var req;
+
+    function get(param) {
+        var req = new XMLHttpRequest();
+        req.open("GET", server + param, false);
+        req.send(null);
+        var data = req.responseText;
+        var jsonResponse = JSON.parse(data);
+        return jsonResponse;
+    }
+
+    function run(req) {
+        postMessage(get("answerbyseat?questionid=" + req));
+        setTimeout(run(req), 1000);
+    }
+
+    onmessage = function (event) {
+        req = event.data;
+        postMessage(get("answerbyseat?questionid=" + req));
+        setTimeout(run(req), 1000);
     }
 }
 

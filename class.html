@@ -36,8 +36,12 @@
     <input type="button" value="Show inactive questions" onClick="showInactiveQuestions()" />
     <div id="inactiveQuestions"></div>
     <div id="activeQuestions">Active quizzes: </div>
+    <div id="showResultBySeatActiveQuestions" style="display:none">Click to see result of active questions through map: </div>
+
     <input type="button" value="Show finished questions" onClick="showFinishedQuestions()" />
     <div id="finished"></div>
-    <h1 id="countdown"></h1>
+    <input type="button" value="Show result through class map" onClick="unhideShowResult()" />
+    <div id="quizToShowResult"></div>
+    <input type="button" value="Show default class map" onClick="loadClassMap('default', 0)"/>
     <script src="script/class.js"></script>
 </body>

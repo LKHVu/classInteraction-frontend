@@ -64,11 +64,11 @@ td:hover img {
     bottom: 0;
 }
 
-.rightClass {
+.greenBg {
     background-color: green;
 }
 
-.wrongClass {
+.redBg {
     background-color: red;
 }
 
@@ -80,6 +80,14 @@ td:hover img {
     bottom: 0;
 }
 
-.isExchange {
+.resultCheck {
+    position: absolute;
+    right: 0;
+    width: 100%;
+    height: 50%;
+    bottom: 0;
+}
+
+.blackBg {
     background-color: black;
 }

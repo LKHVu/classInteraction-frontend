@@ -72,5 +72,4 @@ function activateQuestion(){
     count();
 }
 
-
 window.onload = load();
