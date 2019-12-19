@@ -12,6 +12,11 @@ var finishedQuestions = [];
 var quizToShowResult = document.getElementById("quizToShowResult");
 var showResultBySeatActiveQuestions = document.getElementById("showResultBySeatActiveQuestions");
 var workerLength = 0;
+var req = window.location.search;
+var calling = false;
+var bigCellCalling;
+var callCloser = document.getElementById("callCloser");
+var studentCalling;
 
 
 function get(param) {
@@ -38,7 +43,6 @@ function post(param, data) {
 
 function load() {
     showActiveQuestions();
-    var req = window.location.search;
     finishedQuestions = get("finishedquestion?className=" + req.replace('?name=', ''));
     table.innerHTML = "";
     year.innerHTML = "";
@@ -101,7 +105,7 @@ function loadMapWithoutData(choice) {
         tableContent += "<tr>";
         for (j = 1; j <= info["cols"]; j++) {
             tableContent += "<td>\r\n" +
-                "<div class=\"bigCell\">\r\n" +
+                "<div id='bigCell " + i + " " + j + "' class=\"bigCell\">\r\n" +
                 "<img id='img " + i + " " + j + "'>" +
                 "<div class=\"cellBottom\">\r\n" +
                 "<span class=\"studentName\" id='name " + i + " " + j + "'></span>" +
@@ -124,7 +128,6 @@ function loadMapWithoutData(choice) {
 
 
 function activeClass() {
-    var req = window.location.search;
     if (info["active"] == 0) {
         put("activeclass" + req + "&year=CS2016");
     } else {
@@ -147,7 +150,6 @@ function unhideCreateQuestion() {
 
 function createMultipleChoiceQuestion() {
     var quizName = document.getElementById("quizName").value;
-    var req = window.location.search;
     var className = req.replace('?name=', '');
     var question = document.getElementById("question").value;
     var A = document.getElementById("A").value;
@@ -172,7 +174,6 @@ function createMultipleChoiceQuestion() {
 }
 
 function showInactiveQuestions() {
-    var req = window.location.search;
     var className = req.replace('?name=', '');
     var questions = get("inactivequiz?className=" + className);
     for (i = 0; i < questions.length; i++) {
@@ -188,7 +189,6 @@ function showFinishedQuestions() {
 }
 
 function showActiveQuestions() {
-    var req = window.location.search;
     var className = req.replace('?name=', '');
     var questions = get("activequestion?className=" + className);
     if (questions.length > 0) {
@@ -209,14 +209,14 @@ function unhideShowResult() {
     }
 }
 
-var w;
+var resultW;
 
 function loadResultBySeat(questionid) {
     loadMapWithoutData("result");
-    w = new Worker(URL.createObjectURL(new Blob(["(" + worker_function.toString() + ")()"], { type: 'text/javascript' })));
+    resultW = new Worker(URL.createObjectURL(new Blob(["(" + worker_result.toString() + ")()"], { type: 'text/javascript' })));
     showResultBySeatActiveQuestions.innerHTML += '<input type="button" value="Stop showing result by seat" onClick="stopLoadResultBySeat()"/>';
-    w.postMessage(questionid);
-    w.onmessage = function (event) {
+    resultW.postMessage(questionid);
+    resultW.onmessage = function (event) {
         var results = event.data;
         if (results.length > workerLength) {
             for (i = 0; i < results.length; i++) {
@@ -239,16 +239,17 @@ function loadResultBySeat(questionid) {
                     }
                 }
             }
+            workerLength = results.length;
         }
     };
 }
 
 function stopLoadResultBySeat() {
-    w.terminate();
-    w = undefined;
+    resultW.terminate();
+    resultW = undefined;
 }
 
-function worker_function() {
+function worker_result() {
     var server = "http://localhost:8080/api/";
     var req;
 
@@ -269,6 +270,62 @@ function worker_function() {
     onmessage = function (event) {
         req = event.data;
         postMessage(get("answerbyseat?questionid=" + req));
+        setTimeout(run(req), 1000);
+    }
+}
+
+var attentionW;
+
+attentionW = new Worker(URL.createObjectURL(new Blob(["(" + worker_attention.toString() + ")()"], { type: 'text/javascript' })));
+attentionW.postMessage(req);
+
+attentionW.onmessage = function (event) {
+    var position = event.data;
+    if (position["row"]!=0){
+        if (!calling){
+            callCloser.style.display = "block";
+            studentCalling = position["studentId"];
+        }
+        var sound = document.getElementById("beep");
+        sound.play();
+        bigCellCalling = document.getElementById("bigCell " + position["row"] + " " + position["col"]);
+        bigCellCalling.style.backgroundColor = "red";
+        calling = true;
+    } else {
+        if (calling==true){
+            callCloser.style.display = "none";
+            bigCellCalling.style.backgroundColor = "white";
+            calling = false;
+        }
+    }
+};
+
+function closeCall(){
+    var callResult = put("setattention?turn=off&studentid=" + studentCalling)["Result"];
+    alert(callResult);
+}
+
+function worker_attention() {
+    var server = "http://localhost:8080/api/";
+    var req;   
+
+    function get(param) {
+        var req = new XMLHttpRequest();
+        req.open("GET", server + param, false);
+        req.send(null);
+        var data = req.responseText;
+        var jsonResponse = JSON.parse(data);
+        return jsonResponse;
+    }
+    
+    function run(req) {
+        postMessage(get("checkattention?classname=" + req.replace('?name=', '')));
+        setTimeout(run(req), 1000);
+    }
+
+    onmessage = function (event) {
+        req = event.data;
+        postMessage(get("checkattention?classname=" + req.replace('?name=', '')));
         setTimeout(run(req), 1000);
     }
 }

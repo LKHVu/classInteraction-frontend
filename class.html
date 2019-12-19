@@ -15,6 +15,7 @@
     <div>Class is: <span id="active"></p>
     </div>
     <div><span id="year"></span></div>
+    <input type="button" id="callCloser" value="Close attention call" style="display:none" onClick="closeCall()" />
     <input type="button" value="Turn class ON/OFF" onClick="activeClass()" />
     <div id="student"></div>
     <input type="button" value="Create new multiple choice question" onClick="unhideCreateQuestion()" />
@@ -36,12 +37,16 @@
     <input type="button" value="Show inactive questions" onClick="showInactiveQuestions()" />
     <div id="inactiveQuestions"></div>
     <div id="activeQuestions">Active quizzes: </div>
-    <div id="showResultBySeatActiveQuestions" style="display:none">Click to see result of active questions through map: </div>
+    <div id="showResultBySeatActiveQuestions" style="display:none">Click to see result of active questions through map:
+    </div>
 
     <input type="button" value="Show finished questions" onClick="showFinishedQuestions()" />
     <div id="finished"></div>
     <input type="button" value="Show result through class map" onClick="unhideShowResult()" />
     <div id="quizToShowResult"></div>
-    <input type="button" value="Show default class map" onClick="loadClassMap('default', 0)"/>
+    <input type="button" value="Show default class map" onClick="loadClassMap('default', 0)" />
+    <audio id="beep">
+        <source src="sound/beep-01a.wav" type="audio/mpeg">
+    </audio>
     <script src="script/class.js"></script>
 </body>

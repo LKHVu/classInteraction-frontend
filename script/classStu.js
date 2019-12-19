@@ -24,6 +24,15 @@ function post(param, data) {
     return jsonResponse;
 }
 
+function put(param) {
+    var req = new XMLHttpRequest();
+    req.open("PUT", server + param, false);
+    req.send(null);
+    var data = req.responseText;
+    var jsonResponse = JSON.parse(data);
+    return jsonResponse;
+}
+
 function load() {
     seat.innerHTML = "";
     var state = get("state" + req);
@@ -66,7 +75,7 @@ w.postMessage(req);
 
 w.onmessage = function (event) {
     var questions = event.data;
-    if (questions.length>workerLength){
+    if (questions.length!=workerLength){
         activeQuestions.innerHTML = "Active quizzes: ";
         for (i = 0; i < questions.length; i++) {
             activeQuestions.innerHTML += " <a href=quizStu.html?questionid=" + questions[i]["id"] + ">" + questions[i]["name"] + "</a>"
@@ -77,7 +86,7 @@ w.onmessage = function (event) {
 
 function worker_function() {
     var server = "http://localhost:8080/api/";
-    var req;
+    var req;   
 
     function get(param) {
         var req = new XMLHttpRequest();
@@ -97,6 +106,24 @@ function worker_function() {
         req = event.data;
         postMessage(get("activequestion?className=" + req.replace('?name=', '')));
         setTimeout(run(req), 1000);
+    }
+}
+
+function callAttention(){
+    var callResult = put("setattention?turn=on&studentid=1")["Result"];
+    alert(callResult);
+    if (callResult=="You are now calling for attention"){
+        document.getElementById("cancelCall").style.display="block";
+        document.getElementById("call").style.display="none";
+    }
+}
+
+function cancelAttention(){
+    var callResult = put("setattention?turn=off&studentid=1")["Result"];
+    alert(callResult);
+    if (callResult=="Attention call canceled"){
+        document.getElementById("cancelCall").style.display="none";
+        document.getElementById("call").style.display="block";
     }
 }
 
