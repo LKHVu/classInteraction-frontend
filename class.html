@@ -16,6 +16,7 @@
     </div>
     <div><span id="year"></span></div>
     <input type="button" id="callCloser" value="Close attention call" style="display:none" onClick="closeCall()" />
+    <input type="button" id="callAccepter" value="Accept attention call" style="display:none" onClick="acceptCall()" />
     <input type="button" value="Turn class ON/OFF" onClick="activeClass()" />
     <div id="student"></div>
     <input type="button" value="Create new multiple choice question" onClick="unhideCreateQuestion()" />
@@ -48,5 +49,7 @@
     <audio id="beep">
         <source src="sound/beep-01a.wav" type="audio/mpeg">
     </audio>
+    <script src ="lib/jwt-decode.min.js"></script>
     <script src="script/class.js"></script>
+</script>
 </body>

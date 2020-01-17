@@ -4,10 +4,29 @@ var active = document.getElementById("active");
 var activeQuestions = document.getElementById("activeQuestions");
 var req = window.location.search;
 var workerLength = 0;
+var token = localStorage.getItem("token");
+var workerData = JSON.stringify({ 'token': token, 'req': req });
+var payload;
+
+
+function check() {
+    if (token == null) {
+        body.innerHTML = "";
+    } else {
+        payload = jwt_decode(token);
+        if (payload["role"] != 3) {
+            body.innerHTML = "";
+        } else {
+            load();
+        }
+    }
+}
+
 
 function get(param) {
     var req = new XMLHttpRequest();
     req.open("GET", server + param, false);
+    req.setRequestHeader("Authorization", "Bearer " + token);
     req.send(null);
     var data = req.responseText;
     var jsonResponse = JSON.parse(data);
@@ -18,6 +37,7 @@ function post(param, data) {
     var req = new XMLHttpRequest();
     req.open("POST", server + param, false);
     req.setRequestHeader("Content-Type", "application/json");
+    req.setRequestHeader("Authorization", "Bearer " + token);
     req.send(data);
     var data = req.responseText;
     var jsonResponse = JSON.parse(data);
@@ -27,6 +47,7 @@ function post(param, data) {
 function put(param) {
     var req = new XMLHttpRequest();
     req.open("PUT", server + param, false);
+    req.setRequestHeader("Authorization", "Bearer " + token);
     req.send(null);
     var data = req.responseText;
     var jsonResponse = JSON.parse(data);
@@ -65,17 +86,17 @@ function load() {
 function chooseSeat(span) {
     var coord = span.id.split(" ");
     var classname = req.replace('?name=', '');
-    var data = JSON.stringify({ "class": classname, "row": coord[0], "col": coord[1], "student": 1 });
+    var data = JSON.stringify({ "class": classname, "row": coord[0], "col": coord[1], "student": payload["id"] });
     alert(post("createstate", data)["Result"]);
     load();
 }
 
 w = new Worker(URL.createObjectURL(new Blob(["(" + worker_function.toString() + ")()"], { type: 'text/javascript' })));
-w.postMessage(req);
+w.postMessage(workerData);
 
 w.onmessage = function (event) {
     var questions = event.data;
-    if (questions.length!=workerLength){
+    if (questions.length != workerLength) {
         activeQuestions.innerHTML = "Active quizzes: ";
         for (i = 0; i < questions.length; i++) {
             activeQuestions.innerHTML += " <a href=quizStu.html?questionid=" + questions[i]["id"] + ">" + questions[i]["name"] + "</a>"
@@ -86,45 +107,82 @@ w.onmessage = function (event) {
 
 function worker_function() {
     var server = "http://localhost:8080/api/";
-    var req;   
+    var workerData;
+    var req;
+    var token;
 
     function get(param) {
         var req = new XMLHttpRequest();
         req.open("GET", server + param, false);
+        req.setRequestHeader("Authorization", "Bearer " + token);
         req.send(null);
         var data = req.responseText;
         var jsonResponse = JSON.parse(data);
         return jsonResponse;
     }
-    
+
     function run(req) {
         postMessage(get("activequestion?className=" + req.replace('?name=', '')));
+        setTimeout(run(req), 20000);
+    }
+
+    onmessage = function (event) {
+        workerData = JSON.parse(event.data);
+        req = workerData["req"];
+        token = workerData["token"];
+        postMessage(get("activequestion?className=" + req.replace('?name=', '')));
+        setTimeout(run(req), 20000);
+    }
+}
+
+function callAttention() {
+    var callResult = put("callattention?studentid=" + payload["id"])["Result"];
+    alert(callResult);
+    var acceptedWData = JSON.stringify({"token": token, "student": payload["id"]});
+    acceptedW = new Worker(URL.createObjectURL(new Blob(["(" + worker_accepted.toString() + ")()"], { type: 'text/javascript' })));
+    acceptedW.postMessage(acceptedWData);
+    acceptedW.onmessage = function (event) {
+        var result = event.data;
+        if (result["Result"]){
+            setTimeout(function () { window.location.href = "call.html" }, 0);
+        }
+    }
+}
+
+function cancelAttention() {
+    var callResult = put("closeattention")["Result"];
+    alert(callResult);
+}
+
+function worker_accepted() {
+    var server = "http://localhost:8080/api/";
+    var studentId;
+    var token;
+
+    function get(param) {
+        var req = new XMLHttpRequest();
+        req.open("GET", server + param, false);
+        req.setRequestHeader("Authorization", "Bearer " + token);
+        req.send(null);
+        var data = req.responseText;
+        var jsonResponse = JSON.parse(data);
+        return jsonResponse;
+    }
+
+    function run(req) {
+        postMessage(get("checkaccepted?studentid=" + req));
         setTimeout(run(req), 1000);
     }
 
     onmessage = function (event) {
-        req = event.data;
-        postMessage(get("activequestion?className=" + req.replace('?name=', '')));
-        setTimeout(run(req), 1000);
+        var workerData = JSON.parse(event.data);
+        studentId = workerData["student"];
+        token = workerData["token"];
+        postMessage(get("checkaccepted?studentid=" + studentId));
+        setTimeout(run(studentId), 1000);
     }
 }
 
-function callAttention(){
-    var callResult = put("setattention?turn=on&studentid=1")["Result"];
-    alert(callResult);
-    if (callResult=="You are now calling for attention"){
-        document.getElementById("cancelCall").style.display="block";
-        document.getElementById("call").style.display="none";
-    }
-}
 
-function cancelAttention(){
-    var callResult = put("setattention?turn=off&studentid=1")["Result"];
-    alert(callResult);
-    if (callResult=="Attention call canceled"){
-        document.getElementById("cancelCall").style.display="none";
-        document.getElementById("call").style.display="block";
-    }
-}
 
-window.onload = load();
+window.onload = check();

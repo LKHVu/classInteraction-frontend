@@ -7,7 +7,7 @@
     <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
 </head>
 
-<body>
+<body id="body">
     <div id="classes">
     </div>
     <input type="button" value="Create new class" onClick="unhide()" />
@@ -19,10 +19,12 @@
     <input type="button" value="Create new student" onClick="unhideCreateStudent()" />
     <input type="input" value="Name" name="name" id="name" style="display:none" />
     <input type="input" value="Year" name="year" id="year" style="display:none" />
+    <input type="input" value="Login" name="login" id="login" style="display:none" />
+    <input type="password" value="Login" name="password" id="password" style="display:none" />
     <input type="checkbox" id="exchange" style="display:none" /> <span id="exchangeText" style="display:none">Exchange
         student</span>
     <input type="button" value="Submit" id="submitStudent" style="display:none" onClick="createStudent()" />
     </form>
-
+    <script src ="lib/jwt-decode.min.js"></script>
     <script src="script/admin.js"></script>
 </body>

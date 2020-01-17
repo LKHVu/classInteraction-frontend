@@ -17,20 +17,25 @@ var calling = false;
 var bigCellCalling;
 var callCloser = document.getElementById("callCloser");
 var studentCalling;
+var token = localStorage.getItem("token");
+var workerData = JSON.stringify({'token': token, 'req': req });
+var callAccepter = document.getElementById("callAccepter");
 
 
 function get(param) {
     var req = new XMLHttpRequest();
     req.open("GET", server + param, false);
+    req.setRequestHeader("Authorization", "Bearer " + token);
     req.send(null);
     var data = req.responseText;
     var jsonResponse = JSON.parse(data);
-    return jsonResponse
+    return jsonResponse;
 }
 
 function put(param) {
     var req = new XMLHttpRequest();
     req.open("PUT", server + param, false);
+    req.setRequestHeader("Authorization", "Bearer " + token);
     req.send(null);
 }
 
@@ -38,7 +43,21 @@ function post(param, data) {
     var req = new XMLHttpRequest();
     req.open("POST", server + param, false);
     req.setRequestHeader("Content-Type", "application/json");
+    req.setRequestHeader("Authorization", "Bearer " + token);
     req.send(data);
+}
+
+function check() {
+    if (token == null) {
+        body.innerHTML = "";
+    } else {
+        var payload = jwt_decode(token);
+        if (payload["role"] != 2) {
+            body.innerHTML = "";
+        } else {
+            load();
+        }
+    }
 }
 
 function load() {
@@ -215,7 +234,11 @@ function loadResultBySeat(questionid) {
     loadMapWithoutData("result");
     resultW = new Worker(URL.createObjectURL(new Blob(["(" + worker_result.toString() + ")()"], { type: 'text/javascript' })));
     showResultBySeatActiveQuestions.innerHTML += '<input type="button" value="Stop showing result by seat" onClick="stopLoadResultBySeat()"/>';
-    resultW.postMessage(questionid);
+    var resultWData = JSON.stringify({
+        "token": token,
+        "questionid": questionid
+    });
+    resultW.postMessage(resultWData);
     resultW.onmessage = function (event) {
         var results = event.data;
         if (results.length > workerLength) {
@@ -247,15 +270,18 @@ function loadResultBySeat(questionid) {
 function stopLoadResultBySeat() {
     resultW.terminate();
     resultW = undefined;
+    loadClassMap("default", 0);
 }
 
 function worker_result() {
     var server = "http://localhost:8080/api/";
     var req;
+    var token;
 
     function get(param) {
         var req = new XMLHttpRequest();
         req.open("GET", server + param, false);
+        req.setRequestHeader("Authorization", "Bearer " + token);
         req.send(null);
         var data = req.responseText;
         var jsonResponse = JSON.parse(data);
@@ -268,7 +294,9 @@ function worker_result() {
     }
 
     onmessage = function (event) {
-        req = event.data;
+        var workerData = JSON.parse(event.data);
+        req = workerData["questionid"];
+        token = workerData["token"];
         postMessage(get("answerbyseat?questionid=" + req));
         setTimeout(run(req), 1000);
     }
@@ -277,13 +305,14 @@ function worker_result() {
 var attentionW;
 
 attentionW = new Worker(URL.createObjectURL(new Blob(["(" + worker_attention.toString() + ")()"], { type: 'text/javascript' })));
-attentionW.postMessage(req);
+attentionW.postMessage(workerData);
 
 attentionW.onmessage = function (event) {
     var position = event.data;
-    if (position["row"]!=0){
-        if (!calling){
+    if (position["row"] != 0) {
+        if (!calling) {
             callCloser.style.display = "block";
+            callAccepter.style.display = "block";
             studentCalling = position["studentId"];
         }
         var sound = document.getElementById("beep");
@@ -292,7 +321,7 @@ attentionW.onmessage = function (event) {
         bigCellCalling.style.backgroundColor = "red";
         calling = true;
     } else {
-        if (calling==true){
+        if (calling) {
             callCloser.style.display = "none";
             bigCellCalling.style.backgroundColor = "white";
             calling = false;
@@ -300,34 +329,45 @@ attentionW.onmessage = function (event) {
     }
 };
 
-function closeCall(){
-    var callResult = put("setattention?turn=off&studentid=" + studentCalling)["Result"];
+function closeCall() {
+    var callResult = put("closeattention")["Result"];
     alert(callResult);
+    studentCalling = null;
+}
+
+function acceptCall(){
+    put("setaccepted?turn=on");
+    setTimeout(function () { window.location.href = "call.html" }, 0);
 }
 
 function worker_attention() {
     var server = "http://localhost:8080/api/";
-    var req;   
+    var workerData;
+    var req;
+    var token;
 
     function get(param) {
         var req = new XMLHttpRequest();
         req.open("GET", server + param, false);
+        req.setRequestHeader("Authorization", "Bearer " + token);
         req.send(null);
         var data = req.responseText;
         var jsonResponse = JSON.parse(data);
         return jsonResponse;
     }
-    
+
     function run(req) {
         postMessage(get("checkattention?classname=" + req.replace('?name=', '')));
         setTimeout(run(req), 1000);
     }
 
     onmessage = function (event) {
-        req = event.data;
+        workerData = JSON.parse(event.data);
+        req = workerData["req"];
+        token = workerData["token"];
         postMessage(get("checkattention?classname=" + req.replace('?name=', '')));
         setTimeout(run(req), 1000);
     }
 }
 
-window.onload = load();
+window.onload = check();

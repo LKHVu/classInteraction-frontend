@@ -5,10 +5,13 @@ var answerDiv = document.getElementById("answerDiv");
 var submitDiv = document.getElementById("submitDiv");
 var countdown = document.getElementById("countdown");
 var quiz;
+var token = localStorage.getItem("token");
+var payload;
 
 function get(param) {
     var req = new XMLHttpRequest();
     req.open("GET", URL + param, false);
+    req.setRequestHeader("Authorization", "Bearer " + token);
     req.send(null);
     var data = req.responseText;
     var jsonResponse = JSON.parse(data);
@@ -19,11 +22,25 @@ function post(param, data) {
     var req = new XMLHttpRequest();
     req.open("POST", URL + param, false);
     req.setRequestHeader("Content-Type", "application/json");
+    req.setRequestHeader("Authorization", "Bearer " + token);
     req.send(data);
 }
 
 async function sleep(msec) {
     return new Promise(resolve => setTimeout(resolve, msec));
+}
+
+function check() {
+    if (token == null) {
+        body.innerHTML = "";
+    } else {
+        payload = jwt_decode(token);
+        if (payload["role"] != 3) {
+            body.innerHTML = "";
+        } else {
+            load();
+        }
+    }
 }
 
 function load() {
@@ -74,7 +91,7 @@ function submitAnswer() {
     }
     var data = JSON.stringify({
         "questionId": questionId,
-        "studentId": 1,
+        "studentId": payload["id"],
         "answer": answer
     });
     post("createmultiplechoiceanswer", data);
@@ -93,4 +110,4 @@ async function count() {
     submitDiv.innerHTML = "Time is over";
 }
 
-window.onload = load();
+window.onload = check();

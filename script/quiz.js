@@ -5,10 +5,12 @@ var answerDiv = document.getElementById("answerDiv");
 var checkActive = document.getElementById("checkActive");
 var countdown = document.getElementById("countdown");
 var quiz;
+var token = localStorage.getItem("token");
 
 function get(param) {
     var req = new XMLHttpRequest();
     req.open("GET", URL + param, false);
+    req.setRequestHeader("Authorization", "Bearer " + token);
     req.send(null);
     var data = req.responseText;
     var jsonResponse = JSON.parse(data);
@@ -19,11 +21,25 @@ function post(param, data) {
     var req = new XMLHttpRequest();
     req.open("POST", URL + param, true);
     req.setRequestHeader("Content-Type", "application/json");
+    req.setRequestHeader("Authorization", "Bearer " + token);
     req.send(data);
 }
 
 async function sleep(msec) {
     return new Promise(resolve => setTimeout(resolve, msec));
+}
+
+function check() {
+    if (token == null) {
+        body.innerHTML = "";
+    } else {
+        var payload = jwt_decode(token);
+        if (payload["role"] != 2) {
+            body.innerHTML = "";
+        } else {
+            load();
+        }
+    }
 }
 
 function load() {
@@ -72,4 +88,4 @@ function activateQuestion(){
     count();
 }
 
-window.onload = load();
+window.onload = check();
