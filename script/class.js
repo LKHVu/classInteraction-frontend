@@ -276,7 +276,7 @@ function stopLoadResultBySeat() {
 }
 
 function worker_result() {
-    var server = "http://localhost:8080/api/";
+    var server = "https://localhost:8080/api/";
     var req;
     var token;
 
@@ -343,7 +343,7 @@ function acceptCall(){
 }
 
 function worker_attention() {
-    var server = "http://localhost:8080/api/";
+    var server = "https://localhost:8080/api/";
     var workerData;
     var req;
     var token;
