@@ -1,5 +1,5 @@
 // const server = "http://localhost:8080/api/";
-const server = "http://vguclassroom-backend.herokuapp.com/api/";
+const server = "https://vguclassroom-backend.herokuapp.com/api/";
 var token = localStorage.getItem("token");
 
 function put(param) {

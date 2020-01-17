@@ -1,5 +1,5 @@
 // const server = "http://localhost:8080/api/";
-const server = "http://vguclassroom-backend.herokuapp.com/api/";
+const server = "https://vguclassroom-backend.herokuapp.com/api/";
 var seat = document.getElementById("seat");
 var active = document.getElementById("active");
 var year = document.getElementById("year");

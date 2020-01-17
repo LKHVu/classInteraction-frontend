@@ -1,5 +1,5 @@
 // const URL = "http://localhost:8080/api/";
-const URL = "http://vguclassroom-backend.herokuapp.com/api/";
+const URL = "https://vguclassroom-backend.herokuapp.com/api/";
 var quizName = document.getElementById("quizName");
 var question = document.getElementById("question");
 var answerDiv = document.getElementById("answerDiv");
