@@ -2,6 +2,7 @@
 const server = "https://vguclassroom-backend.herokuapp.com/api/";
 var loginInput = document.getElementById("loginInput");
 var passwordInput = document.getElementById("passwordInput");
+var body = document.getElementById("body");
 
 function post(param, data) {
     var req = new XMLHttpRequest();

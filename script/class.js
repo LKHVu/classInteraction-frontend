@@ -21,6 +21,7 @@ var studentCalling;
 var token = localStorage.getItem("token");
 var workerData = JSON.stringify({'token': token, 'req': req });
 var callAccepter = document.getElementById("callAccepter");
+var body = document.getElementById("body");
 
 
 function get(param) {

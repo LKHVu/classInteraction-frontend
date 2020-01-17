@@ -5,6 +5,7 @@ var completedQuiz = document.getElementById("completedQuiz");
 var quizArr = [];
 var token;
 var payload;
+var body = document.getElementById("body");
 
 function get(param) {
     var req = new XMLHttpRequest();

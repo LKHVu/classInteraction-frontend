@@ -10,6 +10,7 @@ var D = document.getElementById("D");
 var solution = document.getElementById("solution");
 var answer = document.getElementById("answer");
 var token = localStorage.getItem("token");
+var body = document.getElementById("body");
 
 
 function get(param) {

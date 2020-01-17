@@ -8,6 +8,7 @@ var workerLength = 0;
 var token = localStorage.getItem("token");
 var workerData = JSON.stringify({ 'token': token, 'req': req });
 var payload;
+var body = document.getElementById("body");
 
 
 function check() {

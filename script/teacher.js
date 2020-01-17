@@ -2,6 +2,7 @@
 const URL = "https://vguclassroom-backend.herokuapp.com/api/";
 var classes = document.getElementById("classes");
 var token;
+var body = document.getElementById("body");
 
 
 function get(param) {

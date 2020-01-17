@@ -8,6 +8,7 @@ var countdown = document.getElementById("countdown");
 var quiz;
 var token = localStorage.getItem("token");
 var payload;
+var body = document.getElementById("body");
 
 function get(param) {
     var req = new XMLHttpRequest();

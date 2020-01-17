@@ -5,6 +5,7 @@ var right = document.getElementById("right");
 var wrong = document.getElementById("wrong");
 var no = document.getElementById("no");
 var token = localStorage.getItem("token");
+var body = document.getElementById("body");
 
 function get(param) {
     var req = new XMLHttpRequest();

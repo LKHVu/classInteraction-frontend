@@ -7,6 +7,7 @@ var checkActive = document.getElementById("checkActive");
 var countdown = document.getElementById("countdown");
 var quiz;
 var token = localStorage.getItem("token");
+var body = document.getElementById("body");
 
 function get(param) {
     var req = new XMLHttpRequest();
