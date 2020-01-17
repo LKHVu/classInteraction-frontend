@@ -108,7 +108,8 @@ w.onmessage = function (event) {
 };
 
 function worker_function() {
-    var server = "https://localhost:8080/api/";
+    // var server = "http://localhost:8080/api/";
+    var server = "https://vguclassroom-backend.herokuapp.com/api/";
     var workerData;
     var req;
     var token;
@@ -157,7 +158,8 @@ function cancelAttention() {
 }
 
 function worker_accepted() {
-    var server = "https://localhost:8080/api/";
+    // var server = "http://localhost:8080/api/";
+    var server = "https://vguclassroom-backend.herokuapp.com/api/";
     var studentId;
     var token;
 

@@ -276,7 +276,8 @@ function stopLoadResultBySeat() {
 }
 
 function worker_result() {
-    var server = "https://localhost:8080/api/";
+    // var server = "http://localhost:8080/api/";
+    var server = "https://vguclassroom-backend.herokuapp.com/api/";
     var req;
     var token;
 
@@ -343,7 +344,8 @@ function acceptCall(){
 }
 
 function worker_attention() {
-    var server = "https://localhost:8080/api/";
+    // var server = "http://localhost:8080/api/";
+    var server = "https://vguclassroom-backend.herokuapp.com/api/";
     var workerData;
     var req;
     var token;
