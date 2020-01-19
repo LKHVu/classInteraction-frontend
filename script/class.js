@@ -147,13 +147,18 @@ function loadMapWithoutData(choice) {
     table.innerHTML = tableContent;
 }
 
+function unhideActiveClass(){
+    document.getElementById('intake').style.display = "block";
+    document.getElementById('turnOnButton').style.display = "block";
+}
 
 function activeClass() {
-    if (info["active"] == 0) {
-        put("activeclass" + req + "&year=CS2016");
-    } else {
-        put("deactivateclass" + req);
-    }
+    put("activeclass" + req + "&year=" + document.getElementById('intake').value);
+    load();
+}
+
+function deactiveClass() {
+    put("deactivateclass" + req);
     load();
 }
 

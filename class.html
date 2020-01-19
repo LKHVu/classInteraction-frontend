@@ -17,7 +17,10 @@
     <div><span id="year"></span></div>
     <input type="button" id="callCloser" value="Close attention call" style="display:none" onClick="closeCall()" />
     <input type="button" id="callAccepter" value="Accept attention call" style="display:none" onClick="acceptCall()" />
-    <input type="button" value="Turn class ON/OFF" onClick="activeClass()" />
+    <input type="button" value="Turn class ON" onClick="unhideActiveClass()" />
+    <input type="input" value="Input the intake" name="intake" id="intake" style="display:none" />
+    <input type="button" id="turnOnButton" value="Subming turning the class ON"  style="display:none" onClick="activeClass()" />
+    <input type="button" value="Turn class OFF" onClick="deactiveClass()" />
     <div id="student"></div>
     <input type="button" value="Create new multiple choice question" onClick="unhideCreateQuestion()" />
     <input type="input" value="Name" name="quizName" id="quizName" style="display:none" />
