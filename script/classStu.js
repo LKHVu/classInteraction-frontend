@@ -81,7 +81,11 @@ function load() {
         var row = state[i]["row"];
         var col = state[i]["col"];
         var seatOccupied = document.getElementById(row + " " + col);
-        seatOccupied.style = "color: red;";
+        if (state[i]["student"]==payload["id"]){
+            seatOccupied.style = "color: green; font-weight: 900; font-size: larger";
+        } else {
+            seatOccupied.style = "color: red;";
+        }
     }
 }
 
