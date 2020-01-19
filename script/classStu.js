@@ -187,6 +187,9 @@ function worker_accepted() {
     }
 }
 
-
+function logout(){
+    localStorage.removeItem("token");
+    setTimeout(function () { window.location.href = "index.html" }, 0);
+  }
 
 window.onload = check();
