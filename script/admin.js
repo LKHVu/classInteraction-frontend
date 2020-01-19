@@ -1,8 +1,9 @@
-// const URL = "http://localhost:8080/api/";
-const URL = "https://vguclassroom-backend.herokuapp.com/api/";
+const URL = "http://localhost:8080/api/";
+// const URL = "https://vguclassroom-backend.herokuapp.com/api/";
 var classes = document.getElementById("classes");
 var token;
 var body = document.getElementById("body");
+var fileUploadInput = document.getElementById('singleFileUploadInput');
 
 function get(param) {
   var req = new XMLHttpRequest();
@@ -20,6 +21,16 @@ function post(param, data) {
   req.setRequestHeader("Content-Type", "application/json");
   req.setRequestHeader("Authorization", "Bearer " + token);
   req.send(data);
+}
+
+function postFile(param, data) {
+  var req = new XMLHttpRequest();
+  req.open("POST", URL + param, false);
+  req.setRequestHeader("Authorization", "Bearer " + token);
+  req.send(data);
+  var data = req.responseText;
+  var jsonResponse = JSON.parse(data);
+  return jsonResponse;
 }
 
 function check() {
@@ -70,23 +81,28 @@ function unhideCreateStudent() {
   document.getElementById('password').style.display = "block";
   document.getElementById('exchange').style.display = "inline-block";
   document.getElementById('exchangeText').style.display = "inline-block";
+  fileUploadInput.style.display = "block";
   document.getElementById('submitStudent').style.display = "block";
 }
 
 function createStudent() {
+  var files = fileUploadInput.files;
+  var formData = new FormData();
+  formData.append("file", files[0]);
+  var uploadResponse = postFile("uploadFile", formData);
   var name = document.getElementById("name").value;
   var year = document.getElementById("year").value;
   var login = document.getElementById("login").value;
   var password = document.getElementById("password").value;
   var exchange = document.getElementById("exchange").checked;
   var data = JSON.stringify({
-    "name": name, "img": "image/3x4.jpg", "year": year, "exchange": exchange, "login": login, "password": password
+    "name": name, "img": uploadResponse["fileDownloadUri"], "year": year, "exchange": exchange, "login": login, "password": password
   });
   post("createstudent", data);
   load();
 }
 
-function logout(){
+function logout() {
   localStorage.removeItem("token");
   setTimeout(function () { window.location.href = "index.html" }, 0);
 }
