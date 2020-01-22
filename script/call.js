@@ -1,5 +1,5 @@
 // var conn = new WebSocket('ws://localhost:8080/socket');
-var conn = new WebSocket('ws://vguclassroom-backend.herokuapp.com/socket');
+var conn = new WebSocket('wss://vguclassroom-backend.herokuapp.com/socket');
 var yourVideo = document.getElementById("yourVideo");
 var friendsVideo = document.getElementById("friendsVideo");
 
