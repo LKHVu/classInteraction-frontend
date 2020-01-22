@@ -1,4 +1,5 @@
-var conn = new WebSocket('ws://localhost:8080/socket');
+// var conn = new WebSocket('ws://localhost:8080/socket');
+var conn = new WebSocket('ws://vguclassroom-backend.herokuapp.com/socket');
 var yourVideo = document.getElementById("yourVideo");
 var friendsVideo = document.getElementById("friendsVideo");
 
@@ -93,7 +94,7 @@ function showFriendsFace() {
 
 function handleOffer(offer) {
   peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-
+  
   // create and send an answer to an offer
   peerConnection.createAnswer(function (answer) {
     peerConnection.setLocalDescription(answer);
