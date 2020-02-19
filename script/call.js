@@ -40,7 +40,7 @@ var input = document.getElementById("messageInput");
 function initialize() {
   var configuration = {'iceServers': [
     {'urls': 'stun:stun.services.mozilla.com'},
-    {'urls': 'stun:stun.l.google.com:19302'}  
+    {'urls': 'turn:numb.viagenie.ca','credential': 'Pokemon!234','username': 'vule1128@gmail.com'} 
 ]};
 
   peerConnection = new RTCPeerConnection(configuration, {
